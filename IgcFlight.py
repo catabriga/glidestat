@@ -89,8 +89,9 @@ class IgcFlight:
 		dlat = lat - centerLat
 		dlon = lon - centerLon
 		
-		x = dlat * earthRadius
-		y = dlon * earthRadius
+		x = dlon * earthRadius
+		y = dlat * earthRadius
+		
 		return x,y
 			
 	def calcXYZcoords(self, centerCoord):

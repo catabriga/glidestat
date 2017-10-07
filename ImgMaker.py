@@ -62,10 +62,10 @@ class ImgMaker:
 		cellY = int(y / res)
 		
 		squareSegments = []
-		squareSegments.append((( cellX    * res,  cellY    * res), ((cellX+1) * res,  cellY    * res)))
-		squareSegments.append((((cellX+1) * res,  cellY    * res), ((cellX+1) * res, (cellY+1) * res)))
-		squareSegments.append((((cellX+1) * res, (cellY+1) * res), ( cellX    * res, (cellY+1) * res)))
-		squareSegments.append((( cellX    * res, (cellY+1) * res), ( cellX    * res,  cellY    * res)))
+		squareSegments.append(( ( cellX*res   , cellY*res)    , ((cellX+1)*res, cellY*res)))
+		squareSegments.append(( ((cellX+1)*res, cellY*res)    , ((cellX+1)*res, (cellY+1)*res)))
+		squareSegments.append(( ((cellX+1)*res, (cellY+1)*res), ( cellX*res   , (cellY+1)*res)))
+		squareSegments.append(( ( cellX*res   , (cellY+1)*res), ( cellX*res   ,  cellY*res)))
 		
 		endPoint = p2
 		for squareSegment in squareSegments:		
