@@ -50,9 +50,9 @@ class IgcFlight:
 	
 	def __init__(self, filename, centerCoord=None):
 		self.filename = filename
-		self.day = 0
-		self.month = 0
-		self.year = 0
+		self.day = 1
+		self.month = 1
+		self.year = 1
 		self.trackpoints = []
 
 		self.readFile(filename)
@@ -63,10 +63,15 @@ class IgcFlight:
 	def readFile(self, filename):
 		with open(filename, 'r') as f:
 			for line in f:
-				if(line[0] == 'B'):
-					self.trackpoints.append(IgcFlight.TrackPointRecord(line))
-				elif(line.startswith('HFDTE')):
-					self.readDateLine(line)
+				try:
+					if(line[0] == 'B'):					
+						self.trackpoints.append(IgcFlight.TrackPointRecord(line))
+					elif(line.startswith('HFDTE')):
+						self.readDateLine(line)
+				except Exception as e:
+					print('Exception on file ', filename, ' at line:')
+					print(line)
+					print(e)
 					
 	def readDateLine(self, dateline):
 		try:
@@ -91,7 +96,7 @@ class IgcFlight:
 		
 		x = dlon * earthRadius
 		y = dlat * earthRadius
-		
+
 		return x,y
 			
 	def calcXYZcoords(self, centerCoord):

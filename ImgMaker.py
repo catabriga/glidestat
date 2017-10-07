@@ -4,18 +4,17 @@ import numpy as np
 
 class ImgMaker:
 
-	def __init__(self, center, dimension, resolution):
+	def __init__(self, dimension, resolution):
 		(dimX, dimY) = dimension
 		numCellsX = int(dimX / resolution)
 		numCellsY = int(dimY / resolution)
 		self.resolution = resolution
 		self.cells = [[[] for x in range(numCellsX)] for y in range(numCellsY)]
-		self.center = center
 		
 	
 	def cross(v1, v2):
-		cross = v1[0] * v2[1] - v1[1] * v2[0]
-		return cross
+		crs = v1[0] * v2[1] - v1[1] * v2[0]
+		return crs
 	
 	def lineIntersection(segment1, segment2):
 		# considering two segments p + t * r = q + u * s
@@ -54,7 +53,11 @@ class ImgMaker:
 		return math.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
 	
 	def addSegment(self, segment, climbRate):
-		(p1, p2) = segment		
+		(p1, p2) = segment
+
+		if(ImgMaker.segmentLength(p1, p2) > 200):
+			return
+
 		(x,y) = p1
 		res = self.resolution
 		
@@ -80,7 +83,8 @@ class ImgMaker:
 		if(cellX >= 0 and cellX < len(self.cells) and cellY >= 0 and cellY < len(self.cells[cellX])):
 			self.cells[cellX][cellY].append((climbRate,length))
 		else:
-			print('Point outside matrix: (', cellX, ', ', cellY, ')')
+			#print('Point outside matrix: (', cellX, ', ', cellY, ')')
+			pass
 		
 	def getAverageClimb(self, climbList):
 		totalLength = 0.0
@@ -89,7 +93,10 @@ class ImgMaker:
 			(climbRate, length) = c			
 			totalClimb = totalClimb + climbRate*length
 			totalLength = totalLength + length
-		averageClimb = totalClimb / totalLength
+
+		averageClimb = 0.0
+		if(totalLength > 0):
+			averageClimb = totalClimb / totalLength
 		return averageClimb
 		
 	def showMatrix(self):
@@ -98,11 +105,13 @@ class ImgMaker:
 		for i in range(len(self.cells)):
 			for j in range(len(self.cells[i])):
 				if(len(self.cells[i][j]) > 0):
-					mat[i][j] = self.getAverageClimb(self.cells[i][j])				
+					mat[i][j] = self.getAverageClimb(self.cells[i][j])
+				else:
+					mat[i][j] = -10.0		
 					
 		fig = plt.figure()
 		ax = fig.add_subplot(111)
-		cax = ax.matshow(mat, interpolation='nearest')
+		cax = ax.matshow(mat, interpolation='nearest', vmin=-1, vmax=10, cmap='hot')
 		fig.colorbar(cax)
 		plt.show()
 		

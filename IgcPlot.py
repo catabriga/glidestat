@@ -93,17 +93,30 @@ def showDeltas():
 		print('dp = ', dp, '\tdt = ', dt, '\tdps = ', (z-lz)/dt)
 		lastPt = pt
 
-		
-def plotMatrix():
-	flight = ifl.IgcFlight('pico3.igc')
-	
-	imgMaker = ImgMaker.ImgMaker((0.0, 0.0), (6500.0, 2500.0), 25.0)
-	
+
+def addFlightToImgMaker(imgMaker, centerCoord, filename):
+	flight = ifl.IgcFlight(filename, centerCoord)
 	lpt = flight.trackpoints[0]
 	for pt in flight.trackpoints[1:]:
-		climbRate = (pt.z-lpt.z)/(pt.time-lpt.time).total_seconds()
-		imgMaker.addSegment(((lpt.x,lpt.y),(pt.x,pt.y)), climbRate)
-		lpt = pt
+		dt = (pt.time-lpt.time).total_seconds()
+		if(dt > 0):
+			climbRate = (pt.z-lpt.z)/dt
+			if(climbRate > -10):
+				imgMaker.addSegment(((lpt.x,lpt.y),(pt.x,pt.y)), climbRate)
+				lpt = pt
+
+		
+def plotMatrix():
+	centerCoord = (-22.968575*math.pi/180.0, -45.738685*math.pi/180.0)
+	imgMaker = ImgMaker.ImgMaker((20000,20000), 10.0)
+
+	indexFile = 'indexes/pico_agudo.txt'
+	#indexFile = 'indexes/pico_small.txt'
+	with open(indexFile, 'r') as f:		
+		for line in f:
+			line = line.rstrip('\n')
+			print('Reading file ', line)
+			addFlightToImgMaker(imgMaker, centerCoord, line)
 		
 	imgMaker.showMatrix()
 		
